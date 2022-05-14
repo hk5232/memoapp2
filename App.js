@@ -1,91 +1,42 @@
-      
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  FlatList,
-  SafeAreaView
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from './src/screens/Home';
+import Form from './src/screens/Form';
 
-import FormInput from './src/components/FormInput';
+const Stack = createStackNavigator();
 
 export default class App extends Component {
-
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      todoValue: "",
-      memoValue: "",
       todoList: [],
     };
   }
 
-  render() {
-    const { todoValue, memoValue, todoList } = this.state;
+  addNewItem(todoList) {
+    this.setState({ todoList })
+  }
 
+  render() {
+    const { todoList } = this.state;
     return (
-      <SafeAreaView style={styles.container}>
-        <FormInput
-          label="やること"
-          value={todoValue}
-          placeholder="何かやること"
-          onChangeText={v => this.setState({ todoValue: v })}
-        />
-        <FormInput
-          label="メモ"
-          value={memoValue}
-          placeholder="何かメモ"
-          onChangeText={v => this.setState({ memoValue: v })}
-        />
-        <Button
-          title="登録"
-          onPress={() => {
-            const newList = todoList.concat({ todo: todoValue, memo: memoValue });
-            this.setState({
-              todoValue: "",
-              memoValue: "",
-              todoList: newList
-            });
-          }}
-        />
-      </SafeAreaView>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen
+            name="Home"
+            options={ { title: '一覧' } }
+          >
+            {props => <Home {...props} todoList={todoList} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Form"
+            options={ { title: '登録' } }
+          >
+            {props => <Form {...props} todoList={todoList} addNewItem={v => this.addNewItem(v)} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  formGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  formLabel: {
-    paddingRight: 16,
-  },
-  formControl: {
-    height: 40,
-    width: 160,
-    padding: 8,
-    borderColor: 'gray',
-    borderWidth: 1
-  },
-  listItem: {
-    height: 64,
-    width: 200,
-    marginBottom: 16,
-    padding: 16,
-    borderColor: 'gray',
-    borderWidth: 1,
-  }
-});
